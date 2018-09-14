@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>编辑器</title>
+
+<script src="./jquery.min.js"></script>
+
+<style>
+  input{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    outline:none;
+    border:none;
+    padding: 0;
+    margin: 0;
+  }
+	.content{
+    width: 800px;
+    min-height: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #eee;
+  }
+  .header {
+    padding: 6px 0;
+    margin: 0 4px;
+    border-bottom: 1px solid #ccc;
+    font-size: 14px;
+    color: #666;
+  }
+  .input-box {
+    width: 16px;
+    height: 20px;
+  }
+  .box {
+    padding: 10px;
+    min-height: 300px;
+    outline: none
+  }
+  .input-img {
+    height: 16px;
+    line-height: 16px;
+  }
+  .img-box {
+    float: right;
+  }
+  .ry-upload {
+    float: right;
+    margin-right: 10px;
+    overflow: hidden;
+    width: 20px;
+    height: 18px;
+    position: relative;
+    border: 1px dashed #ddd;
+    transition: all .5s ease;
+    cursor: pointer;
+  }
+  .btn-inner {
+    position: absolute;
+    z-index: 1;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    line-height: 18px;
+    color: #888;
+    font-size: 18px;
+    text-align: center;
+  }
+  .btn-file {
+    position: absolute;
+    z-index: 11;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    opacity: 0.01;
+  }
+  .font-size-box {
+    appearance:none;
+    -moz-appearance:none;
+    -webkit-appearance:none;
+    padding: 0 6px;
+    border-radius: 0;
+    background-color: #fff;
+  }
+</style>
+
+<script>
+$(function(){
+  $('#fontColor').on('input',function(e) {
+    textChange('foreColor',e.target.value)
+  })
+  $('#bgColor').on('input',function(e) {
+    textChange('hiliteColor',e.target.value)
+  })
+  $('#fontSize').on('input',function(e) {
+    textChange('fontSize',e.target.value)
+  })
+  $('#file').on('input',function(e) {
+    e.preventDefault()
+    const files = e.target.files[0]
+    if(files) {
+      image2base64(files, (data) => {
+        var pic = `<img src="data:image/jpeg;base64${data}" />`
+        textChange('insertHTML', pic)
+      })
+    }
+  })
+  $('#video').on('input',function(e) {
+    e.preventDefault()
+    const files = e.target.files[0]
+    if(files) {
+      getvideo(files, (data) => {
+        var pic = `<video src=${data} controls="controls">`
+        textChange('insertHTML', pic)
+      })
+    }
+  })
+});
+function textChange(a, b) {
+  var isFocus=$("#editBox").is(":focus");
+  isFocus ? null : $('#editBox').focus();
+  b ?
+  document.execCommand(a, false, b)
+  :
+  document.execCommand(a, true, null)
+}
+function image2base64(file, cb) {
+  const reader = new FileReader()
+  reader.onloadend = function () {
+    cb && cb(this.result)
+  }
+  reader.readAsDataURL(file)
+}
+function getvideo(file, cb) {
+  // 建议判断下视频大小及格式，太大的可能会有问题
+    const reader = new FileReader();
+    reader.onload = function (evt) {
+      cb && cb(evt.target.result)
+    }
+    reader.readAsDataURL(file);
+}
+</script>
+
+</head>
+
+<body>
+  <div class='content'>
+    <header class='header'>
+      <select id='fontSize' defaultValue='3' class='font-size-box'>
+        <option value="3">3号字</option>
+        <option value="1">1号字</option>
+        <option value="2">2号字</option>
+        <option value="4">4号字</option>
+        <option value="5">5号字</option>
+        <option value="6">6号字</option>
+        <option value="7">7号字</option>
+      </select>
+      <span>字体颜色:</span>
+      <input type="color" class="input-box"  id='fontColor'/>
+      <span>背景颜色:</span>
+      <input type="Color" class="input-box" id='bgColor'/>
+      <div class="img-box">
+        <input type="image" src="./img/格式刷.png" class="input-img" onclick='textChange("removeFormat")'/>
+        <input type="image" src="./img/left.png" class="input-img" onclick='textChange("justifyLeft")'/>
+        <input type="image" src="./img/justify.png" class="input-img" onclick='textChange("justifyFull")'/>
+        <input type="image" src="./img/center.png" class="input-img" onclick='textChange("justifyCenter")'/>
+        <input type="image" src="./img/right.png" class="input-img" onclick='textChange("justifyRight")'/>
+        <input type="image" src="./img/B.png" class="input-img" onclick='textChange("bold")'/>
+        <input type="image" src="./img/I.png" class="input-img" onclick='textChange("italic")'/>
+        <input type="image" src="./img/删除线.png" class="input-img" onclick='textChange("strikeThrough")'/>
+        <input type="image" src="./img/下划线.png" class="input-img" onclick='textChange("underline")'/>
+        <input type="image" src="./img/重做.png" class="input-img" onclick='textChange("redo")'/>
+        <input type="image" src="./img/撤销.png" class="input-img" onclick='textChange("undo")'/>
+      </div>
+      <div class="ry-upload">
+        <p class="btn-inner">
+          +
+        </p>
+        <input
+          type="file"
+          name="file"
+          id='file'
+          accept="image/png,image/gif,image/jpeg,/image/jpg"
+          class="btn-file"
+        />
+      </div>
+      <div class="ry-upload">
+        <p class="btn-inner">
+          <img src='./img/timg.jpeg' height="20px"/>
+        </p>
+        <input type="file" class="btn-file" accept="video/*"  id='video'/>
+      </div>
+    </header>
+    <div contenteditable="true" class='box' id='editBox'>
+
+    </div>
+  </div>
+</body>
+</html>
