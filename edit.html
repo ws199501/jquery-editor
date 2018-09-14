@@ -98,12 +98,21 @@
 
 <script>
 $(function(){
+  $(document).keydown(function(event){
+    let key = event.keyCode
+    if(key === 37 || key === 38 || key === 39 || key === 40) {
+      changePositon(event)
+    }
+  })
+  $('#editBox').on('click',function(e) {
+    changePositon(e)
+  })
   $('#fontColor').on('input',function(e) {
     textChange('foreColor',e.target.value)
   })
-  $('#bgColor').on('input',function(e) {
-    textChange('hiliteColor',e.target.value)
-  })
+  // $('#bgColor').on('input',function(e) {
+  //   textChange('hiliteColor',e.target.value)
+  // })
   $('#fontSize').on('input',function(e) {
     textChange('fontSize',e.target.value)
   })
@@ -151,6 +160,68 @@ function getvideo(file, cb) {
     }
     reader.readAsDataURL(file);
 }
+//改变光标位置
+function changePositon(e) {
+  var range = document.getSelection()
+  if(range && range.focusNode.data ) {
+    let t = range.focusNode.data
+    let p = range.focusNode.parentElement
+    let size = p.size
+    let color = p.color
+    //let bgColor = p.style.backgroundColor
+    if(!color) {
+      color = getColor(p)
+    }
+    if(!size) {
+      size = getSize(p)
+    }
+    // if(!bgColor) {
+    //   bgColor = getBgColor(p)
+    // }
+    $('#fontSize').val(size || 3)
+    $('#fontColor').val(color || '#000000')
+    //$('#bgColor').val(bgColor || '#000000')
+  }
+}
+function getBgColor(p) {
+  let c
+  if(p.parentElement) {
+    c = p.parentElement.style.backgroundColor
+    if(c) {
+      return c
+    }else {
+      getColor(p.parentElement)
+    }
+  }else {
+    return {}
+  }
+}
+function getColor(p) {
+  let c
+  if(p.parentElement) {
+    c = p.parentElement.color
+    if(c) {
+      return c
+    }else {
+      getColor(p.parentElement)
+    }
+  }else {
+    return {}
+  }
+}
+function getSize(p) {
+  let s
+  if(p.parentElement) {
+    s = p.parentElement.size
+    if(s) {
+      return s
+    }else {
+      getSize(p.parentElement)
+    }
+  }else {
+    return {}
+  }
+}
 </script>
 
 </head>
@@ -169,8 +240,8 @@ function getvideo(file, cb) {
       </select>
       <span>字体颜色:</span>
       <input type="color" class="input-box"  id='fontColor'/>
-      <span>背景颜色:</span>
-      <input type="Color" class="input-box" id='bgColor'/>
+      <!-- <span>字体背景色:</span>
+      <input type="Color" class="input-box" id='bgColor'/> -->
       <div class="img-box">
         <input type="image" src="./img/格式刷.png" class="input-img" onclick='textChange("removeFormat")'/>
         <input type="image" src="./img/left.png" class="input-img" onclick='textChange("justifyLeft")'/>
